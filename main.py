@@ -1,8 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle, Circle 
-import copy
-import scipy
+from modules import *
+from rrt import *
 
 r = 0.1
 d = .25
@@ -51,7 +51,7 @@ def visualize(states:list)->None:
 # Erwthma 1.3
 def simulate(x0:np.array, u:np.array, dt:float, T:float, method=str)->list:
     """
-    Simulate the robot with Euler or Runge-Kutta method
+    Simulate the robot with Euler or Runge-Kutta 4th order Integration
     Args:
         x0: initial state of the robot
         u: control input
@@ -64,13 +64,16 @@ def simulate(x0:np.array, u:np.array, dt:float, T:float, method=str)->list:
     # assert np.any(u < 0.5)
     # Check if control input is valid
     if np.all(u <= 0.5):
-        K = int(T/dt) + 1
 
+        K = int(T/dt) + 1
         states = [x0]
+
+        # Euler Integration
         if method == "euler":
             for k in range(K):
                 x = states[k] + diffkin(states[k], u) * dt
                 states.append(x)
+        # Runge-Kutta 4th order Integration
         elif method == "rk":
             for k in range(K):
                 x = states[k]
@@ -87,7 +90,8 @@ def simulate(x0:np.array, u:np.array, dt:float, T:float, method=str)->list:
         return 
 
 
-def main():
+def erwthma1():
+
     # Initial state of the robot
     x0 = np.array([[0., -1., 0.]]).T 
     # Control input
@@ -96,13 +100,47 @@ def main():
     dt = 0.1
     # Total time
     T = 4.
-    states = simulate(x0, u, dt, T, "rk")
+    # Integration method
+    method = "rk"
+
+
+    states = simulate(x0, u, dt, T, method)
     visualize(states)
-    
-        
+
+
+
+def erwthma2():
+    # Target position
+    x_target = np.array([[-2., 3.]]).T 
+
+    # Initial position
+    x_init = np.array([[-2., 0.]]).T 
+
+    valid, tree = RRT(x_init, x_target, 500)
+
+    print(valid, len(tree))
+
+    # Tree visualization
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+
+    for s in tree:
+        ax.plot(s[0], s[1], '.', zorder=2)
+
+        for c in tree[s]:
+            ax.plot([s[0], c[0, 0]], [s[1], c[1, 0]], zorder=1)
+
+    plt.ylim(-5., 5.)
+    plt.xlim(-5., 5.)
+    plt.show()
+
+
 
 if __name__ == "__main__":
-    main()
+
+    # erwthma1()
+
+    erwthma2()
 
 
 
