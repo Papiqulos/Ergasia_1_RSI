@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.patches import Rectangle, Circle 
+from matplotlib.patches import Rectangle
 from modules import *
 from rrt import *
 
@@ -20,9 +20,9 @@ def diffkin(x:np.array, u:np.array)->np.array:
     Returns:
         continuous kinematics of the robot
     """
-    a = np.array([[-r / ( 2 * d ), r / ( 2 * d )], 
-                  [( r / 2 ) * np.cos(x[0, 0]), ( r / 2 ) * np.cos(x[0, 0])], 
-                  [( r / 2 ) * np.sin(x[0, 0]), ( r / 2 ) * np.sin(x[0, 0])]])
+    a = np.array([[-r / ( 2. * d ), r / ( 2. * d )], 
+                  [( r / 2. ) * np.cos(x[0, 0]), ( r / 2. ) * np.cos(x[0, 0])], 
+                  [( r / 2. ) * np.sin(x[0, 0]), ( r / 2. ) * np.sin(x[0, 0])]])
     
     return a @ u
 
@@ -49,7 +49,7 @@ def visualize(states:list)->None:
         return
         
 # Erwthma 1.3
-def simulate(x0:np.array, u:np.array, dt:float, T:float, method=str)->list:
+def simulate(x0:np.array, u:np.array, dt:float, T:float, method:str = "rk")->list:
     """
     Simulate the robot with Euler or Runge-Kutta 4th order Integration
     Args:
@@ -111,28 +111,23 @@ def erwthma1():
 
 def erwthma2():
     # Target position
-    x_target = np.array([[-2., 3.]]).T 
+    x_target = np.array([[-2., 1.]]).T 
 
     # Initial position
     x_init = np.array([[-2., 0.]]).T 
 
-    valid, tree = RRT(x_init, x_target, 500)
+    # Obstacles
+    obstacles = [(0., 0., 1.), (0., -3., 1.)]  # (x,y,radius)
 
-    print(valid, len(tree))
+    # valid, tree = RRT(x_init, x_target, 1000)
+    # print(valid, len(tree))
+    # visualize_without_obstacles(tree)
 
-    # Tree visualization
-    fig = plt.figure()
-    ax = fig.add_subplot(111)
+    valid1, tree1 = RRT_obstacles(x_init, x_target, obstacles, 1000)
+    print(valid1, len(tree1))
+    visualize_with_obstacles(tree1, obstacles)
 
-    for s in tree:
-        ax.plot(s[0], s[1], '.', zorder=2)
-
-        for c in tree[s]:
-            ax.plot([s[0], c[0, 0]], [s[1], c[1, 0]], zorder=1)
-
-    plt.ylim(-5., 5.)
-    plt.xlim(-5., 5.)
-    plt.show()
+    
 
 
 
