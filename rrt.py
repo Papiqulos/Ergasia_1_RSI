@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from modules import *
-from modeling import *
+from modeling import simulate
 
 def sample_state(state_template:np.array)->tuple:
     """
@@ -15,8 +15,7 @@ def sample_state(state_template:np.array)->tuple:
     """
     state = np.array([[np.random.uniform(-5., 5.) for _ in range(len(state_template[:,0]))]]).T
     return state_to_tuple(state)
-
-## Without obstacles  
+ 
 def valid_state(x:np.array)->bool:
     """
     Check if the state is valid
@@ -52,7 +51,7 @@ def nearest(x_sample:tuple, tree:dict)->tuple:
     
     return nearest_state
     
-def connect(x_start:tuple, x_target:tuple)->np.array:
+def connect(x_start:tuple, x_target:tuple, opt:bool)->np.array:
     """
     Connect the start state to the target state via a linear path
 
@@ -62,38 +61,39 @@ def connect(x_start:tuple, x_target:tuple)->np.array:
     Returns:
         new state
     """
-    ## Linear path
-    # max_dist = 0.3
-    
-    # x_start = tuple_to_state(x_start)
-    # x_target = tuple_to_state(x_target)
-    
-    # dist = distance_points(x_start, x_target)
+    if opt:
+        # Optimization routine (slow)
+        x_start = tuple_to_state(x_start)
+        x_target = tuple_to_state(x_target)
+        min_dist = np.inf
+        best_state = None
 
-    # return (x_target - x_start) / dist * max_dist + x_start
+        def sample_control():
+            return np.random.uniform(-0.5, 0.5, (2, 1))
+        
+        K = 100
+        for _ in range(K):
+            u = sample_control()
+            states = simulate(x_start, u, 0.1, 4., "rk")
+            dist = distance_points(state_to_tuple(states[-1]), x_target)
+            if dist < min_dist:
+                min_dist = dist
+                best_state = states[-1]
 
-    ## Optimization routine (slow)
-    x_start = tuple_to_state(x_start)
-    x_target = tuple_to_state(x_target)
-    min_dist = np.inf
-    best_state = None
+        return best_state
+    else:
+        ## Linear path
+        max_dist = 0.3
+        
+        x_start = tuple_to_state(x_start)
+        x_target = tuple_to_state(x_target)
+        
+        dist = distance_points(x_start, x_target)
 
-    def sample_control():
-        return np.random.uniform(-0.5, 0.5, (2, 1))
-    
-    K = 100
-    for _ in range(K):
-        u = sample_control()
-        states = simulate(x_start, u, 0.1, 4., "rk")
-        dist = distance_points(state_to_tuple(states[-1]), x_target)
-        if dist < min_dist:
-            min_dist = dist
-            best_state = states[-1]
-
-    return best_state
+        return (x_target - x_start) / dist * max_dist + x_start
 
 # RRT algorithm
-def RRT(x_start:np.array, x_goal:np.array, max_iters:int = 1000)->tuple:
+def RRT(x_start:np.array, x_goal:np.array, opt:bool, max_iters:int = 1000)->tuple:
     """
     Rapidly-exploring Random Tree algorithm
 
@@ -110,7 +110,7 @@ def RRT(x_start:np.array, x_goal:np.array, max_iters:int = 1000)->tuple:
     for i in range(max_iters):
         sample = sample_state(x_start)
         nearest_state = nearest(sample ,tree)
-        x_new = connect(nearest_state, sample)
+        x_new = connect(nearest_state, sample, opt)
         if valid_state(x_new):
             # makin x_new a child of nearest_state
             tree[nearest_state].append(x_new) 
@@ -121,7 +121,7 @@ def RRT(x_start:np.array, x_goal:np.array, max_iters:int = 1000)->tuple:
     
     return False, tree
 
-def visualize_without_obstacles(tree:dict)->None:
+def visualize2D_without_obstacles(tree:dict)->None:
     """
     Visualize the tree of states without obstacles
 

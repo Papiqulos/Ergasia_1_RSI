@@ -75,7 +75,7 @@ def collide_obstacles(x:tuple, obstacles:list)->bool:
     collision2 = distance_points(x, obstacles[1][:2]) <= obstacles[1][2]
     return collision1 or collision2
 
-def visualize_with_obstacles(tree:dict, obstacles:list)->None:
+def visualize2D_with_sobstacles(tree:dict, obstacles:list)->None:
     """
     Visualize the tree of states with obstacles
     
