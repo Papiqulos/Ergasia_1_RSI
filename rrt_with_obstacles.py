@@ -4,8 +4,6 @@ from matplotlib.patches import Circle
 from modules import *
 from rrt import nearest, sample_state
 
-
-
 ## With obstacles
 def connect1(x_start, x_target, obstacles):
     max_dist = 0.3
