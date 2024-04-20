@@ -12,3 +12,4 @@ def find_key_by_value(tree, target_value):
 d = {1: [(2, 3), (4, 5)], 2: [(3, 4), (5, 6)]}
 
 print(find_key_by_value(d, (3, 4))) 
+# Output: 2

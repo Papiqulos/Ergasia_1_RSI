@@ -1,9 +1,10 @@
 import matplotlib.pyplot as plt
-from matplotlib.patches import Circle, Rectangle
+from matplotlib.patches import Circle, Rectangle, Polygon
 import numpy as np
 
 r = .1
 d = .25
+points = np.array([[0., d], [2*d, d], [3*d, d/2], [2*d, 0.], [0., 0.], [0., d]])
 
 # Erwthma 1.2
 def visualize_states(states:list)->None:
@@ -22,8 +23,8 @@ def visualize_states(states:list)->None:
             # add rectangle to plot
             ax.add_patch(rect)
 
-        plt.xlim(-20, 20)
-        plt.ylim(-20, 20)
+        plt.xlim(-10, 10)
+        plt.ylim(-10, 10)
         plt.show()
     else:
         return
@@ -77,4 +78,17 @@ def visualize_best_path(path:list, obstacles:list=[])->None:
 
     plt.ylim(-5., 5.)
     plt.xlim(-5., 5.)
+    plt.show()
+
+
+
+
+if "__main__" == __name__:
+    polygon = Polygon(points, edgecolor='black', closed=True, fill=True)
+    polygon.set_xy(points+np.array([1., 2.]))
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    ax.add_patch(polygon)
+    plt.xlim(-10, 10)
+    plt.ylim(-10, 10)
     plt.show()

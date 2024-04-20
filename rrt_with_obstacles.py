@@ -1,25 +1,54 @@
 import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.patches import Circle
 from modules import *
 from rrt import nearest, sample_state
+from modeling import simulate
 
 ## With obstacles
-def connect1(x_start, x_target, obstacles):
-    max_dist = 0.3
-    
-    x_start = tuple_to_state(x_start)
-    x_target = tuple_to_state(x_target)
-    
-    dist = distance_points(x_start, x_target)
+def connect1(x_start:tuple, x_target:tuple, opt:bool, obstacles:list)->np.ndarray:
+    """
+    Connect the start state to the target state via a linear path or an optimized path
+    while avoiding obstacles
 
-    xnew = (x_target - x_start) / dist * max_dist + x_start
-    xnew_tuple = state_to_tuple(xnew)
+    Args:
+        x_start: start state
+        x_target: target state
+    Returns:
+        new state
+    """
+    best_state = None
+    if opt:
+        # Optimization routine (slow)
+        x_start = tuple_to_state(x_start)
+        x_target = tuple_to_state(x_target)
+        min_dist = np.inf
 
-    if collide_obstacles(xnew_tuple, obstacles):
+        def sample_control():
+            return np.random.uniform(-0.5, 0.5, (2, 1))
+        
+        K = 100
+        for _ in range(K):
+            u = sample_control()
+            states = simulate(x_start, u, 0.1, 4., "rk")
+            dist = distance_points(state_to_tuple(states[-1]), x_target)
+            if dist < min_dist:
+                min_dist = dist
+                best_state = states[-1]
+    else:
+        ## Linear path
+        max_dist = 0.3
+        
+        x_start = tuple_to_state(x_start)
+        x_target = tuple_to_state(x_target)
+        
+        dist = distance_points(x_start, x_target)
+
+        best_state = (x_target - x_start) / dist * max_dist + x_start
+
+    best_state_tuple = state_to_tuple(best_state)
+    if collide_obstacles(best_state_tuple, obstacles):
         return True
     else:
-        return xnew    
+        return best_state    
 
 def valid_state1(x, obstacles):
     if isinstance(x, bool):
@@ -30,7 +59,7 @@ def valid_state1(x, obstacles):
     return True
 
 # RRT algorithm with obstacles
-def RRT_obstacles(x_start:np.ndarray, x_goal:np.ndarray, obstacles:list, max_iters:int = 1000)->tuple:
+def RRT_obstacles(x_start:np.ndarray, x_goal:np.ndarray, opt:bool, obstacles:list, max_dist:float, max_iters:int = 1000)->tuple:
     """
     Rapidly-exploring Random Tree algorithm with obstacles
 
@@ -45,16 +74,16 @@ def RRT_obstacles(x_start:np.ndarray, x_goal:np.ndarray, obstacles:list, max_ite
     """
     tree = {}
     tree[state_to_tuple(x_start)] = []
-    for i in range(max_iters):
+    for _ in range(max_iters):
         sample = sample_state(x_start)
         nearest_state = nearest(sample ,tree)
-        x_new = connect1(nearest_state, sample, obstacles)
+        x_new = connect1(nearest_state, sample, opt, obstacles)
         if valid_state1(x_new, obstacles):
             # makin x_new a child of nearest_state
             tree[nearest_state].append(x_new) 
             # add a node to the tree
             tree[state_to_tuple(x_new)] = [] 
-            if distance_points(x_new, x_goal) <= 0.1:
+            if distance_points(x_new, x_goal) <= max_dist:
                 return True, tree
     
     return False, tree

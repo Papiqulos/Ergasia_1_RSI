@@ -1,6 +1,4 @@
 import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.patches import Circle
 from modules import *
 from modeling import simulate
 
@@ -54,7 +52,7 @@ def nearest(x_sample:tuple, tree:dict)->tuple:
     
 def connect(x_start:tuple, x_target:tuple, opt:bool)->np.ndarray:
     """
-    Connect the start state to the target state via a linear path
+    Connect the start state to the target state via a linear path or an optimized path
 
     Args:
         x_start: start state
@@ -62,12 +60,12 @@ def connect(x_start:tuple, x_target:tuple, opt:bool)->np.ndarray:
     Returns:
         new state
     """
+    best_state = None
     if opt:
         # Optimization routine (slow)
         x_start = tuple_to_state(x_start)
         x_target = tuple_to_state(x_target)
         min_dist = np.inf
-        best_state = None
 
         def sample_control():
             return np.random.uniform(-0.5, 0.5, (2, 1))
@@ -80,8 +78,6 @@ def connect(x_start:tuple, x_target:tuple, opt:bool)->np.ndarray:
             if dist < min_dist:
                 min_dist = dist
                 best_state = states[-1]
-
-        return best_state
     else:
         ## Linear path
         max_dist = 0.3
@@ -91,10 +87,12 @@ def connect(x_start:tuple, x_target:tuple, opt:bool)->np.ndarray:
         
         dist = distance_points(x_start, x_target)
 
-        return (x_target - x_start) / dist * max_dist + x_start
+        best_state = (x_target - x_start) / dist * max_dist + x_start
+
+    return best_state
 
 # RRT algorithm
-def RRT(x_start:np.ndarray, x_goal:np.ndarray, opt:bool, max_iters:int = 1000)->tuple:
+def RRT(x_start:np.ndarray, x_goal:np.ndarray, opt:bool, max_dist:float, max_iters:int = 1000)->tuple:
     """
     Rapidly-exploring Random Tree algorithm
 
@@ -106,6 +104,7 @@ def RRT(x_start:np.ndarray, x_goal:np.ndarray, opt:bool, max_iters:int = 1000)->
         True if a path from the start to the goal was found, False otherwise
         tree: tree of states
     """
+
     tree = {}
     tree[state_to_tuple(x_start)] = []
     for i in range(max_iters):
@@ -117,8 +116,12 @@ def RRT(x_start:np.ndarray, x_goal:np.ndarray, opt:bool, max_iters:int = 1000)->
             tree[nearest_state].append(x_new) 
             # add a node to the tree
             tree[state_to_tuple(x_new)] = [] 
-            if distance_points(x_new, x_goal) <= 0.5:
-                return True, tree
+            if len(sample) > 2:
+                if distance_points(x_new[1:], x_goal[1:]) <= max_dist:
+                    return True, tree
+            else:
+                if distance_points(x_new, x_goal) <= max_dist:
+                    return True, tree
     
     return False, tree
 
