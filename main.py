@@ -1,8 +1,9 @@
 import numpy as np
 from modules import *
-from rrt import RRT, visualize2D_without_obstacles
-from rrt_with_obstacles import RRT_obstacles, visualize2D_with_sobstacles
+from rrt import RRT, visualize_tree_without_obstacles, visualize_best_path
+from rrt_with_obstacles import RRT_obstacles, visualize_tree_with_obstacles
 from modeling import simulate, visualize_states
+from test import find_key_by_value
 
 
 
@@ -35,22 +36,26 @@ def erwthma2():
     # No Obstacles
     opt = False
     valid, tree = RRT(x_init, x_target, opt, 100)
-    print(valid, len(tree))
+    print(f"Path found: {valid}\nNumber of nodes: {len(tree)}")
     states_tuples = list(tree.keys())
     end = states_tuples[-1]
     print(f"End state: {end}")
-    print(f"distance from target: {distance_points(end, state_to_tuple(x_target))}")
-    visualize2D_without_obstacles(tree)
+    print(f"distance from target: {distance_points(end, state_to_tuple(x_target))}\n")
+    # nice_print_tree(tree)
+    path = best_path(tree, state_to_tuple(x_init), end)
+    # visualize_tree_without_obstacles(tree)
+    visualize_best_path(path)
 
     # Obstacles
-    # obstacles = [(0., 0., 1.), (0., -3., 1.)]  # (x,y,radius)
-    # valid1, tree1 = RRT_obstacles(x_init, x_target, obstacles, 500)
-    # print(valid1, len(tree1))
+    # obstacles = [(0., 0., 1.), (0., -3., 1.), (2., -1., 1.)]  # (x,y,radius)
+    # valid1, tree1 = RRT_obstacles(x_init, x_target, obstacles, 1000)
+    # print(f"Path found: {valid1}\nNumber of nodes: {len(tree1)}")
     # states_tuples = list(tree1.keys())
     # end = states_tuples[-1]
     # print(f"End state: {end}")
     # print(f"distance from target: {distance_points(end, state_to_tuple(x_target))}")
-    # visualize_with_obstacles(tree1, obstacles)
+    # # nice_print_tree(tree1)
+    # visualize2D_with_obstacles(tree1, obstacles)
 
 def erwthma3():
 
@@ -73,6 +78,7 @@ def erwthma3():
         opt  = True
         valid, tree = RRT(x_init, x_target, opt, 100)
         print(valid, len(tree))
+        
         # Check if a path was found
         if valid :
             print("Path found")
@@ -105,9 +111,9 @@ if __name__ == "__main__":
 
     # erwthma1()
 
-    erwthma2()
+    # erwthma2()
 
-    # erwthma3()
+    erwthma3()
 
 
 

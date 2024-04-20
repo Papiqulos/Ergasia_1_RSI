@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from modules import *
 from modeling import simulate
 
-def sample_state(state_template:np.array)->tuple:
+def sample_state(state_template:np.ndarray)->tuple:
     """
     Sample a random state and return it in tuple form
 
@@ -16,7 +16,7 @@ def sample_state(state_template:np.array)->tuple:
     state = np.array([[np.random.uniform(-5., 5.) for _ in range(len(state_template[:,0]))]]).T
     return state_to_tuple(state)
  
-def valid_state(x:np.array)->bool:
+def valid_state(x:np.ndarray)->bool:
     """
     Check if the state is valid
 
@@ -51,7 +51,7 @@ def nearest(x_sample:tuple, tree:dict)->tuple:
     
     return nearest_state
     
-def connect(x_start:tuple, x_target:tuple, opt:bool)->np.array:
+def connect(x_start:tuple, x_target:tuple, opt:bool)->np.ndarray:
     """
     Connect the start state to the target state via a linear path
 
@@ -93,7 +93,7 @@ def connect(x_start:tuple, x_target:tuple, opt:bool)->np.array:
         return (x_target - x_start) / dist * max_dist + x_start
 
 # RRT algorithm
-def RRT(x_start:np.array, x_goal:np.array, opt:bool, max_iters:int = 1000)->tuple:
+def RRT(x_start:np.ndarray, x_goal:np.ndarray, opt:bool, max_iters:int = 1000)->tuple:
     """
     Rapidly-exploring Random Tree algorithm
 
@@ -121,7 +121,7 @@ def RRT(x_start:np.array, x_goal:np.array, opt:bool, max_iters:int = 1000)->tupl
     
     return False, tree
 
-def visualize2D_without_obstacles(tree:dict)->None:
+def visualize_tree_without_obstacles(tree:dict)->None:
     """
     Visualize the tree of states without obstacles
 
@@ -143,6 +143,26 @@ def visualize2D_without_obstacles(tree:dict)->None:
     plt.ylim(-5., 5.)
     plt.xlim(-5., 5.)
     # ax.set_zlim(-5., 5.)
+    plt.show()
+
+def visualize_best_path(path:list)->None:
+    """
+    Visualize the best path from the start to the target state
+
+    Args:
+        path: best path
+    Returns: None
+    """
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+
+    for i in range(len(path) - 1):
+        ax.plot(path[i][0], path[i][1], '.', zorder=2)
+        ax.plot(path[i+1][0], path[i+1][1], '.', zorder=2)
+        ax.plot([path[i][0], path[i + 1][0]], [path[i][1], path[i + 1][1]], zorder=1)
+
+    plt.ylim(-5., 5.)
+    plt.xlim(-5., 5.)
     plt.show()
 
 

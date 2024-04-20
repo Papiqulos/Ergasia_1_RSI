@@ -30,7 +30,7 @@ def valid_state1(x, obstacles):
     return True
 
 # RRT algorithm with obstacles
-def RRT_obstacles(x_start:np.array, x_goal:np.array, obstacles:list, max_iters:int = 1000)->tuple:
+def RRT_obstacles(x_start:np.ndarray, x_goal:np.ndarray, obstacles:list, max_iters:int = 1000)->tuple:
     """
     Rapidly-exploring Random Tree algorithm with obstacles
 
@@ -61,7 +61,7 @@ def RRT_obstacles(x_start:np.array, x_goal:np.array, obstacles:list, max_iters:i
 
 def collide_obstacles(x:tuple, obstacles:list)->bool:
     """
-    Check if the state collides with the obstacles (only circles are supported)
+    Check if the state collides with the obstacles (only circles are supported for now)
 
     Args:
         x: state
@@ -69,11 +69,15 @@ def collide_obstacles(x:tuple, obstacles:list)->bool:
     Returns:
         True if the state collides with the obstacles, False otherwise
     """
-    collision1 = distance_points(x, obstacles[0][:2]) <= obstacles[0][2]
-    collision2 = distance_points(x, obstacles[1][:2]) <= obstacles[1][2]
-    return collision1 or collision2
+    collisions = []
+    for obstacle in obstacles:
+        collisions.append(distance_points(x, obstacle[:2]) <= obstacle[2])
+    if any(collisions):
+        return True
+    else:
+        return False
 
-def visualize2D_with_sobstacles(tree:dict, obstacles:list)->None:
+def visualize_tree_with_obstacles(tree:dict, obstacles:list)->None:
     """
     Visualize the tree of states with obstacles
     

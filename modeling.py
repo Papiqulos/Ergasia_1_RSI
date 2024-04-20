@@ -9,7 +9,7 @@ d = .25
 # u = [uL, uR]^T
 
 # Erwthma 1.1
-def diffkin(x:np.array, u:np.array)->np.array:
+def diffkin(x:np.ndarray, u:np.ndarray)->np.ndarray:
     """
     Differential kinematics model of the robot
 
@@ -49,7 +49,7 @@ def visualize_states(states:list)->None:
         return
         
 # Erwthma 1.3
-def simulate(x0:np.array, u:np.array, dt:float, T:float, method:str = "rk")->list:
+def simulate(x0:np.ndarray, u:np.ndarray, dt:float, T:float, method:str = "rk")->list:
     """
     Simulate the robot with Euler or Runge-Kutta 4th order Integration
     
