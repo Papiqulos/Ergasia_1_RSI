@@ -4,6 +4,8 @@ from matplotlib.patches import Rectangle
 
 r = .1
 d = .25
+rectangle_width = 4*d
+rectangle_height = 2*d
 
 # x = [theta, x, y]^T
 # u = [uL, uR]^T

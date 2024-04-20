@@ -107,7 +107,7 @@ def RRT(x_start:np.ndarray, x_goal:np.ndarray, opt:bool, max_dist:float, max_ite
 
     tree = {}
     tree[state_to_tuple(x_start)] = []
-    for i in range(max_iters):
+    for _ in range(max_iters):
         sample = sample_state(x_start)
         nearest_state = nearest(sample ,tree)
         x_new = connect(nearest_state, sample, opt)

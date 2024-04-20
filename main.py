@@ -36,20 +36,20 @@ def erwthma2():
     opt = False
 
     ## No Obstacles
-    valid, tree = RRT(x_init, x_target, opt, 0.1, 1000)
-    print(f"Path found: {valid}\nNumber of nodes: {len(tree)}")
+    # valid, tree = RRT(x_init, x_target, opt, 0.1, 1000)
+    # print(f"Path found: {valid}\nNumber of nodes: {len(tree)}")
 
-    # Getting the final state and printing its distance from the target state
-    states_tuples = list(tree.keys())
-    end = states_tuples[-1]
-    print(f"End state: {end}")
-    print(f"distance from target: {distance_points(end, state_to_tuple(x_target))}\n")
-    # nice_print_tree(tree)
+    # # Getting the final state and printing its distance from the target state
+    # states_tuples = list(tree.keys())
+    # end = states_tuples[-1]
+    # print(f"End state: {end}")
+    # print(f"distance from target: {distance_points(end, state_to_tuple(x_target))}\n")
+    # # nice_print_tree(tree)
 
-    # Getting the best path from the tree and visualizing it
-    path = best_path(tree, init_tuple, end)
-    # visualize_tree_without_obstacles(tree)
-    visualize_best_path(path)
+    # # Getting the best path from the tree and visualizing it
+    # path = best_path(tree, init_tuple, end)
+    # # visualize_tree_without_obstacles(tree)
+    # visualize_best_path(path)
 
     ## Obstacles
     obstacles = [(0., 0., 1.), (0., -3., 1.), (2., -1., 1.)]  # (x,y,radius)
@@ -116,8 +116,8 @@ def erwthma3():
     # Obstacles
     obstacles = [(0., 0., 1.), (0., -3., 1.)]  # (x,y,radius)
     if cond1 and cond2:
-        opt  = False
-        valid, tree = RRT_obstacles(x_init, x_target, opt, obstacles, 0.5, 1000)
+        opt  = True
+        valid, tree = RRT_obstacles(x_init, x_target, opt, obstacles, 0.5, 100)
         print(f"Path found: {valid}\nNumber of nodes: {len(tree)}")
 
         # Getting the final state and printing its distance from the target state
@@ -147,9 +147,9 @@ def erwthma3():
 
 if __name__ == "__main__":
 
-    # erwthma1()
+    erwthma1()
 
-    erwthma2()
+    # erwthma2()
 
     # erwthma3()
 
