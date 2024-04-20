@@ -77,28 +77,3 @@ def collide_obstacles(x:tuple, obstacles:list)->bool:
     else:
         return False
 
-def visualize_tree_with_obstacles(tree:dict, obstacles:list)->None:
-    """
-    Visualize the tree of states with obstacles
-    
-    Args:
-        tree: tree of states
-        obstacles: list of obstacles
-    Returns: None
-    """
-    
-    fig = plt.figure()
-    ax = fig.add_subplot(111)
-
-    for s in tree:
-        ax.plot(s[0], s[1], '.', zorder=2)
-
-        for c in tree[s]:
-            ax.plot([s[0], c[0, 0]], [s[1], c[1, 0]], zorder=1)
-
-    for o in obstacles:
-        ax.add_patch(Circle([o[0], o[1]], radius=o[2], fill=False, zorder=3))
-
-    plt.ylim(-5., 5.)
-    plt.xlim(-5., 5.)
-    plt.show()

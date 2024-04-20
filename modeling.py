@@ -25,29 +25,6 @@ def diffkin(x:np.ndarray, u:np.ndarray)->np.ndarray:
     
     return a @ u
 
-# Erwthma 1.2
-def visualize_states(states:list)->None:
-    """
-    Visualize the states of the robot
-
-    Args:
-        states: list of states of the robot
-    Returns: None
-    """
-    if states:
-        fig = plt.figure()
-        ax = fig.add_subplot(111)
-        for state in states[::2]:
-            rect = Rectangle((state[1,0], state[2,0]), 4*d, 2*d, edgecolor = 'black', fill=False, angle=state[0, 0] * 180. / np.pi)
-            # add rectangle to plot
-            ax.add_patch(rect)
-
-        plt.xlim(-20, 20)
-        plt.ylim(-20, 20)
-        plt.show()
-    else:
-        return
-        
 # Erwthma 1.3
 def simulate(x0:np.ndarray, u:np.ndarray, dt:float, T:float, method:str = "rk")->list:
     """

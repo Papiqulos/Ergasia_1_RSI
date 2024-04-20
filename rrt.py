@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.patches import Circle
 from modules import *
 from modeling import simulate
 
@@ -121,49 +122,9 @@ def RRT(x_start:np.ndarray, x_goal:np.ndarray, opt:bool, max_iters:int = 1000)->
     
     return False, tree
 
-def visualize_tree_without_obstacles(tree:dict)->None:
-    """
-    Visualize the tree of states without obstacles
 
-    Args:
-        tree: tree of states
-    Returns: None
-    """
-    
-    fig = plt.figure()
-    # ax = plt.axes(projection='3d')
-    ax = fig.add_subplot(111)
 
-    for s in tree:
-        ax.plot(s[0], s[1], '.', zorder=2)
 
-        for c in tree[s]:
-            ax.plot([s[0], c[0, 0]], [s[1], c[1, 0]], zorder=1)
-
-    plt.ylim(-5., 5.)
-    plt.xlim(-5., 5.)
-    # ax.set_zlim(-5., 5.)
-    plt.show()
-
-def visualize_best_path(path:list)->None:
-    """
-    Visualize the best path from the start to the target state
-
-    Args:
-        path: best path
-    Returns: None
-    """
-    fig = plt.figure()
-    ax = fig.add_subplot(111)
-
-    for i in range(len(path) - 1):
-        ax.plot(path[i][0], path[i][1], '.', zorder=2)
-        ax.plot(path[i+1][0], path[i+1][1], '.', zorder=2)
-        ax.plot([path[i][0], path[i + 1][0]], [path[i][1], path[i + 1][1]], zorder=1)
-
-    plt.ylim(-5., 5.)
-    plt.xlim(-5., 5.)
-    plt.show()
 
 
 
