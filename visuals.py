@@ -7,7 +7,7 @@ d = .25
 points = np.array([[0., d], [2*d, d], [3*d, d/2], [2*d, 0.], [0., 0.], [0., d]])
 
 # Erwthma 1.2
-def visualize_states(states:list)->None:
+def visualize_states(states:list, obstacles:list=[])->None:
     """
     Visualize the states of the robot
 
@@ -22,6 +22,10 @@ def visualize_states(states:list)->None:
             rect = Rectangle((state[1,0], state[2,0]), 4*d, 2*d, edgecolor = 'black', fill=False, angle=state[0, 0] * 180. / np.pi)
             # add rectangle to plot
             ax.add_patch(rect)
+        
+        if obstacles:
+            for o in obstacles:
+                ax.add_patch(Circle([o[0], o[1]], radius=o[2], fill=False, zorder=3))
 
         plt.xlim(-10, 10)
         plt.ylim(-10, 10)
@@ -84,8 +88,10 @@ def visualize_best_path(path:list, obstacles:list=[])->None:
 
 
 if "__main__" == __name__:
+    # Test for pointed polygon
     polygon = Polygon(points, edgecolor='black', closed=True, fill=True)
     polygon.set_xy(points+np.array([1., 2.]))
+    
     fig = plt.figure()
     ax = fig.add_subplot(111)
     ax.add_patch(polygon)

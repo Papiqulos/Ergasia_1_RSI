@@ -29,7 +29,7 @@ def connect1(x_start:tuple, x_target:tuple, opt:bool, obstacles:list)->np.ndarra
         for _ in range(K):
             u = sample_control()
             states = simulate(x_start, u, 0.1, 4., "rk")
-            dist = distance_points(state_to_tuple(states[-1]), x_target)
+            dist = distance_points(state_to_tuple(states[-1])[1:], x_target[1:])
             if dist < min_dist:
                 min_dist = dist
                 best_state = states[-1]
@@ -99,8 +99,12 @@ def collide_obstacles(x:tuple, obstacles:list)->bool:
         True if the state collides with the obstacles, False otherwise
     """
     collisions = []
+
     for obstacle in obstacles:
-        collisions.append(distance_points(x, obstacle[:2]) <= obstacle[2])
+        if len(x) > 2:
+            collisions.append(distance_points(x[1:], obstacle[:2]) <= obstacle[2])
+        else:
+            collisions.append(distance_points(x, obstacle[:2]) <= obstacle[2])
     if any(collisions):
         return True
     else:

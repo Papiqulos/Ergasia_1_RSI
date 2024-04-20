@@ -116,11 +116,13 @@ def RRT(x_start:np.ndarray, x_goal:np.ndarray, opt:bool, max_dist:float, max_ite
             tree[nearest_state].append(x_new) 
             # add a node to the tree
             tree[state_to_tuple(x_new)] = [] 
+            
             if len(sample) > 2:
-                if distance_points(x_new[1:], x_goal[1:]) <= max_dist:
-                    return True, tree
+                dist = distance_points(x_new[1:], x_goal[1:])
             else:
-                if distance_points(x_new, x_goal) <= max_dist:
+                dist = distance_points(x_new, x_goal)
+
+            if dist <= max_dist:
                     return True, tree
     
     return False, tree

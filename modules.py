@@ -16,7 +16,8 @@ def distance_points(point1:tuple, point2:tuple)->float:
     return distance
 
 def state_to_tuple(xx:np.ndarray)->tuple:
-    """ Convert a state to a tuple 
+    """ 
+    Convert a state to a tuple 
 
     Args:
         xx: state
@@ -91,7 +92,6 @@ def best_path(tree:dict, start:tuple, target:tuple)->list:
     path = []
     current = target
     while current != start:
-        # print(current)
         path.append(current)
         current = find_key_by_value(tree, tuple_to_state(current))
     path.append(start)
