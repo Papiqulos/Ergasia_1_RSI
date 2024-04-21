@@ -68,7 +68,7 @@ def task2():
     # nice_print_tree(tree) # Uncomment to see the tree
 
     # Getting the best path from the tree and visualizing it
-    path = best_path(tree1, state_to_tuple(x_init), end)
+    path = best_path(tree1, init_tuple, end)
     # visualize_tree_with_obstacles(tree) # Uncomment to see the tree
     visualize_best_path(path, obstacles)
 
@@ -159,14 +159,15 @@ def task3():
 
 
 if __name__ == "__main__":
+
     # Model the robot and visualize for a given control input
     # task1()
 
     # RRT algorithm for a given initial and target state with and without obstacles
-    # task2()
+    task2()
 
     # RRT algorithm for a given initial and target state with and without obstacles for the differential drive robot
-    task3()
+    # task3()
 
 
 

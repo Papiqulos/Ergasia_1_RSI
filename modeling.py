@@ -1,6 +1,4 @@
 import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.patches import Rectangle
 
 # Constants
 r = .1                  # radius of the wheels
@@ -43,7 +41,7 @@ def simulate(x0:np.ndarray, u:np.ndarray, dt:float, T:float, method:str = "rk")-
     """
 
     # assert np.any(u < 0.5)
-    
+
     # Check if control input is valid
     if np.all(u <= 0.5):
 
