@@ -1,7 +1,6 @@
 import numpy as np
 from modules import *
-from rrt import RRT
-from rrt_with_obstacles import RRT_obstacles
+from rrt import RRT, RRT_obstacles
 from modeling import simulate
 from visuals import *
 
@@ -87,39 +86,10 @@ def erwthma3():
 
     ## No Obstacles
     # Check if the initial and target states are valid
-    if cond1 and cond2:
-        opt  = True
-        valid, tree, trajectories = RRT(x_init, x_target, opt, 0.5, 100)
-        # print(trajectories[-1])
-        tr = [item for sublist in trajectories for item in sublist]
-        print(f"Path found: {valid}\nNumber of nodes: {len(tree)}")
-
-        # Getting the final state and printing its distance from the target state
-        states_tuples = list(tree.keys())
-        end = states_tuples[-1]
-        states = []
-        for state in states_tuples:
-            states.append(tuple_to_state(state))
-        
-        print(f"End state: {end}")
-        print(f"distance from target state(only x, y): {distance_points(end[1:], state_to_tuple(x_target)[1:])}")
-
-        # Getting the best path from the tree and visualizing it
-        # path = best_path(tree, init_tuple, end)
-        # path_xy = [p[1:] for p in path]
-        # visualize_best_path(path_xy)
-        # best_states = [tuple_to_state(p) for p in path]
-        visualize_states(tr)
-        
-    else:
-        print("Invalid")
-
-
-    # Obstacles
-    # obstacles = [(0., 0., 1.), (0., -3., 1.)]  # (x,y,radius)
     # if cond1 and cond2:
     #     opt  = True
-    #     valid, tree = RRT_obstacles(x_init, x_target, opt, obstacles, 0.5, 100)
+    #     valid, tree, trajectories = RRT(x_init, x_target, opt, 0.5, 100)
+    #     tr = [item for sublist in trajectories for item in sublist]
     #     print(f"Path found: {valid}\nNumber of nodes: {len(tree)}")
 
     #     # Getting the final state and printing its distance from the target state
@@ -134,13 +104,45 @@ def erwthma3():
 
     #     # Getting the best path from the tree and visualizing it
     #     path = best_path(tree, init_tuple, end)
-    #     path_xy = [p[1:] for p in path]
+    #     # path_xy = [p[1:] for p in path]
     #     # visualize_best_path(path_xy)
     #     best_states = [tuple_to_state(p) for p in path]
-    #     visualize_states(best_states, obstacles)
+    #     visualize_states(best_states)
+    #     # visualize_states(tr)
         
     # else:
     #     print("Invalid")
+
+
+    # Obstacles
+    obstacles = [(0., 0., 1.), (0., -3., 1.)]  # (x,y,radius)
+    # Check if the initial and target states are valid
+    if cond1 and cond2:
+        opt  = True
+        valid, tree, trajectories = RRT_obstacles(x_init, x_target, opt, obstacles, 0.5, 100)
+        tr = [item for sublist in trajectories for item in sublist]
+        print(f"Path found: {valid}\nNumber of nodes: {len(tree)}")
+
+        # Getting the final state and printing its distance from the target state
+        states_tuples = list(tree.keys())
+        end = states_tuples[-1]
+        states = []
+        for state in states_tuples:
+            states.append(tuple_to_state(state))
+        
+        print(f"End state: {end}")
+        print(f"distance from target state(only x, y): {distance_points(end[1:], state_to_tuple(x_target)[1:])}")
+
+        # Getting the best path from the tree and visualizing it
+        path = best_path(tree, init_tuple, end)
+        # path_xy = [p[1:] for p in path]
+        # visualize_best_path(path_xy)
+        best_states = [tuple_to_state(p) for p in path]
+        # visualize_states(best_states, obstacles)
+        visualize_states(tr, obstacles)
+        
+    else:
+        print("Invalid")
     
     
     
@@ -151,9 +153,9 @@ if __name__ == "__main__":
 
     # erwthma1()
 
-    erwthma2()
+    # erwthma2()
 
-    # erwthma3()
+    erwthma3()
 
 
 

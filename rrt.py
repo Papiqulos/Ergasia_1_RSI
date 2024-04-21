@@ -1,6 +1,5 @@
 import numpy as np
-from modules import distance_points, state_to_tuple, optimal_control, linear_path
-from rrt_with_obstacles import collide_obstacles
+from modules import distance_points, state_to_tuple, optimal_control, linear_path, collide_obstacles
 
 def sample_state(state_template:np.ndarray)->tuple:
     """
@@ -34,7 +33,7 @@ def connect(x_start:tuple, x_target:tuple, opt:bool, obstacles:list=[])->np.ndar
     states = None
     if opt:
         # Optimization routine (slow)
-        best_state, states = optimal_control(x_start, x_target, 100)
+        best_state, states = optimal_control(x_start, x_target, 100, obstacles)
     else:
         # Linear path
         best_state = linear_path(x_start, x_target)
@@ -58,6 +57,7 @@ def valid_state(x:np.ndarray, obstacles:list=[])->bool:
     Returns:
         True if the state is valid, False otherwise
     """
+
     if obstacles:
         if isinstance(x, bool):
             if x:
@@ -105,6 +105,7 @@ def RRT(x_start:np.ndarray, x_goal:np.ndarray, opt:bool, max_dist:float, max_ite
     Returns:
         True if a path from the start to the goal was found, False otherwise
         tree: tree of states
+        trajectories: list of trajectories for each node
     """
 
     tree = {}
@@ -121,6 +122,46 @@ def RRT(x_start:np.ndarray, x_goal:np.ndarray, opt:bool, max_dist:float, max_ite
             # add a node to the tree
             tree[state_to_tuple(x_new)] = [] 
             
+            if len(sample) > 2:
+                dist = distance_points(x_new[1:], x_goal[1:])
+            else:
+                dist = distance_points(x_new, x_goal)
+
+            if dist <= max_dist:
+                    return True, tree, trajectories
+    
+    return False, tree, trajectories
+
+# RRT algorithm with obstacles
+def RRT_obstacles(x_start:np.ndarray, x_goal:np.ndarray, opt:bool, obstacles:list, max_dist:float, max_iters:int = 1000)->tuple:
+    """
+    Rapidly-exploring Random Tree algorithm with obstacles
+
+    Args:
+        x_start: start state
+        x_goal: goal state
+        opt: optimization flag
+        obstacles: list of obstacles
+        max_dist: maximum distance between end state and goal state
+        max_iters: maximum number of iterations
+    Returns:
+        True if a path from the start to the goal was found, False otherwise
+        tree: tree of states
+        trajectories: list of trajectories for each node
+    """
+    tree = {}
+    tree[state_to_tuple(x_start)] = []
+    trajectories = []
+    for _ in range(max_iters):
+        sample = sample_state(x_start)
+        nearest_state = nearest(sample ,tree)
+        x_new, trajectory = connect(nearest_state, sample, opt, obstacles)
+        trajectories.append(trajectory)
+        if valid_state(x_new, obstacles):
+            # makin x_new a child of nearest_state
+            tree[nearest_state].append(x_new) 
+            # add a node to the tree
+            tree[state_to_tuple(x_new)] = [] 
             if len(sample) > 2:
                 dist = distance_points(x_new[1:], x_goal[1:])
             else:

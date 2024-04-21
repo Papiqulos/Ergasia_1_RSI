@@ -1,6 +1,12 @@
 import numpy as np
 from modeling import simulate
 
+r = .1
+d = .25
+rectangle_width = 4*d
+rectangle_height = 2*d
+
+
 def distance_points(point1:tuple, point2:tuple)->float:
     """
     Calculate the distance between two points in tuple form
@@ -99,7 +105,7 @@ def best_path(tree:dict, start:tuple, target:tuple)->list:
 
     return path
 
-def optimal_control(x_start:tuple, x_target:tuple, max_iters:int = 1000)->np.ndarray:
+def optimal_control(x_start:tuple, x_target:tuple, max_iters:int = 1000, obstacles:list=[])->np.ndarray:
     """
     Connect the start state to the target state via an optimized path
 
@@ -107,6 +113,7 @@ def optimal_control(x_start:tuple, x_target:tuple, max_iters:int = 1000)->np.nda
         x_start: start state
         x_target: target state
         max_iters: number of iterations
+        obstacles: list of obstacles
     Returns:
         best_state: new state
         states: trajectory from start to target
@@ -123,6 +130,9 @@ def optimal_control(x_start:tuple, x_target:tuple, max_iters:int = 1000)->np.nda
     for _ in range(max_iters):
         u = sample_control()
         states = simulate(x_start, u, 0.1, 4., "rk")
+        for state in states:
+            if collide_obstacles(state_to_tuple(state), obstacles):
+                break
         dist = distance_points(state_to_tuple(states[-1])[1:], x_target[1:])
         if dist < min_dist:
             min_dist = dist
@@ -150,6 +160,38 @@ def linear_path(x_start:tuple, x_target:tuple)->np.ndarray:
     best_state = (x_target - x_start) / dist * max_dist + x_start
 
     return best_state
+
+def collide_obstacles(x:tuple, obstacles:list)->bool:
+    """
+    Check if the state collides with the obstacles (only circles are supported for now)
+
+    Args:
+        x: state
+        obstacles: list of obstacles
+    Returns:
+        True if the state collides with the obstacles, False otherwise
+    """
+    collisions = []
+
+    for obstacle in obstacles:
+        if len(x) > 2:
+            point1 = x[1:]
+            point2 = x[1:] + np.array([0., 2*d])
+            point3 = x[1:] + np.array([4*d, 2*d])
+            point4 = x[1:] + np.array([4*d, 0])
+
+            col1 = distance_points(point1, obstacle[:2]) <= obstacle[2]
+            col2 = distance_points(point2, obstacle[:2]) <= obstacle[2]
+            col3 = distance_points(point3, obstacle[:2]) <= obstacle[2]
+            col4 = distance_points(point4, obstacle[:2]) <= obstacle[2]
+
+            collisions.append(col1 or col2 or col3 or col4)
+        else:
+            collisions.append(distance_points(x, obstacle[:2]) <= obstacle[2])
+    if any(collisions):
+        return True
+    else:
+        return False
 
 
 
