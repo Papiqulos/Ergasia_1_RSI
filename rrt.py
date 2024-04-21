@@ -31,6 +31,8 @@ def connect(x_start:tuple, x_target:tuple, opt:bool, obstacles:list=[])->np.ndar
 
     best_state = None
     states = None
+
+    # Check if optimization is needed
     if opt:
         # Optimization routine (slow)
         best_state, states = optimal_control(x_start, x_target, 100, obstacles)
@@ -38,6 +40,7 @@ def connect(x_start:tuple, x_target:tuple, opt:bool, obstacles:list=[])->np.ndar
         # Linear path
         best_state = linear_path(x_start, x_target)
 
+    # Handle obstacles if any
     if obstacles:
         best_state_tuple = state_to_tuple(best_state)
         if collide_obstacles(best_state_tuple, obstacles):
@@ -57,8 +60,9 @@ def valid_state(x:np.ndarray, obstacles:list=[])->bool:
     Returns:
         True if the state is valid, False otherwise
     """
-
+    # Handle obstacles if any
     if obstacles:
+        # Check if the state is within the bounds and does not collide with obstacles
         if isinstance(x, bool):
             if x:
                 return False
@@ -66,6 +70,7 @@ def valid_state(x:np.ndarray, obstacles:list=[])->bool:
             return False
         return True
     else:
+        # Check if the state is within the bounds
         if (np.abs(x[1:]) > 5.).any():
             return False
         return True
@@ -112,16 +117,20 @@ def RRT(x_start:np.ndarray, x_goal:np.ndarray, opt:bool, max_dist:float, max_ite
     tree[state_to_tuple(x_start)] = []
     trajectories = []
     for _ in range(max_iters):
+        # Sample a random state
         sample = sample_state(x_start)
+        # Find the nearest state in the tree to the sample state
         nearest_state = nearest(sample ,tree)
+        # Connect the nearest state to the sample state and return the new state and the trajectory
         x_new, trajectory = connect(nearest_state, sample, opt)
         trajectories.append(trajectory)
+        # Check if the new state is valid
         if valid_state(x_new):
-            # makin x_new a child of nearest_state
+            # Make x_new a child of nearest_state
             tree[nearest_state].append(x_new) 
-            # add a node to the tree
+            # Add an empty node to the tree
             tree[state_to_tuple(x_new)] = [] 
-            
+            # Calculate the distance between the new state and the goal state(only x, y)
             if len(sample) > 2:
                 dist = distance_points(x_new[1:], x_goal[1:])
             else:
@@ -153,15 +162,20 @@ def RRT_obstacles(x_start:np.ndarray, x_goal:np.ndarray, opt:bool, obstacles:lis
     tree[state_to_tuple(x_start)] = []
     trajectories = []
     for _ in range(max_iters):
+        # Sample a random state
         sample = sample_state(x_start)
+        # Find the nearest state in the tree to the sample state
         nearest_state = nearest(sample ,tree)
+        # Connect the nearest state to the sample state and return the new state and the trajectory
         x_new, trajectory = connect(nearest_state, sample, opt, obstacles)
         trajectories.append(trajectory)
+        # Check if the new state is valid
         if valid_state(x_new, obstacles):
-            # makin x_new a child of nearest_state
+            # Make x_new a child of nearest_state
             tree[nearest_state].append(x_new) 
-            # add a node to the tree
-            tree[state_to_tuple(x_new)] = [] 
+            # Add an empty node to the tree
+            tree[state_to_tuple(x_new)] = []
+            # Calculate the distance between the new state and the goal state(only x, y)
             if len(sample) > 2:
                 dist = distance_points(x_new[1:], x_goal[1:])
             else:

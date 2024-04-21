@@ -2,10 +2,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 
-r = .1
-d = .25
-rectangle_width = 4*d
-rectangle_height = 2*d
+# Constants
+r = .1                  # radius of the wheels
+d = .25                 # distance between the wheels
+rectangle_width = 4*d   # width of the rectangle
+rectangle_height = 2*d  # height of the rectangle
 
 # x = [theta, x, y]^T
 # u = [uL, uR]^T
@@ -13,7 +14,7 @@ rectangle_height = 2*d
 # Erwthma 1.1
 def diffkin(x:np.ndarray, u:np.ndarray)->np.ndarray:
     """
-    Differential kinematics model of the robot
+    Differential kinematics model of the differential drive robot
 
     Args:
         x: state of the robot
@@ -42,10 +43,13 @@ def simulate(x0:np.ndarray, u:np.ndarray, dt:float, T:float, method:str = "rk")-
     """
 
     # assert np.any(u < 0.5)
+    
     # Check if control input is valid
     if np.all(u <= 0.5):
 
+        # Number of time steps
         K = int(T/dt) + 1
+        # Initial state
         states = [x0]
 
         # Euler Integration

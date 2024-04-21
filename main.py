@@ -6,7 +6,7 @@ from visuals import *
 
 
 
-def erwthma1():
+def task1():
 
     # Initial state of the robot
     x0 = np.array([[0., -1., 0.]]).T 
@@ -22,7 +22,7 @@ def erwthma1():
     states = simulate(x0, u, dt, T, method)
     visualize_states(states)
 
-def erwthma2():
+def task2():
     # Example of a system with 2 state variables(x, y) no orientation
 
     # Target position
@@ -67,7 +67,7 @@ def erwthma2():
     # visualize_tree_with_obstacles(tree)
     visualize_best_path(path, obstacles)
 
-def erwthma3():
+def task3():
 
     # Target position
     x_target = np.array([[-6., 2., 0.]]).T
@@ -150,12 +150,14 @@ def erwthma3():
 
 
 if __name__ == "__main__":
-
+    # Model the robot and visualize for a given control input
     # erwthma1()
 
+    # RRT algorithm for a given initial and target state with and without obstacles
     # erwthma2()
 
-    erwthma3()
+    # RRT algorithm for a given initial and target state with and without obstacles for the differential drive robot
+    task3()
 
 
 

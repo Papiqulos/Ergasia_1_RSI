@@ -1,10 +1,10 @@
 import numpy as np
 from modeling import simulate
 
-r = .1
-d = .25
-rectangle_width = 4*d
-rectangle_height = 2*d
+r = .1                  # radius of the wheels
+d = .25                 # distance between the wheels
+rectangle_width = 4*d   # width of the rectangle
+rectangle_height = 2*d  # height of the rectangle
 
 
 def distance_points(point1:tuple, point2:tuple)->float:
@@ -17,8 +17,10 @@ def distance_points(point1:tuple, point2:tuple)->float:
     Returns:
         distance between the two points
     """
+    # Convert the points to np.array form
     point1 = tuple_to_state(point1)
     point2 = tuple_to_state(point2)
+    # Calculate the distance
     distance = np.linalg.norm(point1 - point2)
     return distance
 
@@ -69,13 +71,13 @@ def nice_print_tree(tree:dict)->None:
 
 def find_key_by_value(tree:dict, target_value:np.ndarray)->tuple:
     """
-
     Find the key of a value in a dictionary
+
     Args:
         tree: tree of states
         target_value: value to find
     Returns:
-        key of the value
+        corresponding key if found, None otherwise
     """
     for key, value in tree.items():
         for v in value:
@@ -97,15 +99,20 @@ def best_path(tree:dict, start:tuple, target:tuple)->list:
     """
     path = []
     current = target
+    # Find the path from the target to the start node
     while current != start:
+        # Add the current node to the path
         path.append(current)
+        # Find the parent of the current node
         current = find_key_by_value(tree, tuple_to_state(current))
+    # Add the start node to the path    
     path.append(start)
+    # Reverse the path
     path.reverse()
 
     return path
 
-def optimal_control(x_start:tuple, x_target:tuple, max_iters:int = 1000, obstacles:list=[])->np.ndarray:
+def optimal_control(x_start:tuple, x_target:tuple, max_iters:int = 100, obstacles:list=[])->np.ndarray:
     """
     Connect the start state to the target state via an optimized path
 
@@ -128,12 +135,17 @@ def optimal_control(x_start:tuple, x_target:tuple, max_iters:int = 1000, obstacl
         return np.random.uniform(-0.5, 0.5, (2, 1))
     
     for _ in range(max_iters):
+        # Sample a control input
         u = sample_control()
+        # Simulate the robot with the control input
         states = simulate(x_start, u, 0.1, 4., "rk")
+        # Check if the robot collides with the obstacles
         for state in states:
             if collide_obstacles(state_to_tuple(state), obstacles):
                 break
+        # Calculate the distance between the last state and the target state
         dist = distance_points(state_to_tuple(states[-1])[1:], x_target[1:])
+        # Update the best state if the distance is smaller
         if dist < min_dist:
             min_dist = dist
             best_state = states[-1]
@@ -154,9 +166,9 @@ def linear_path(x_start:tuple, x_target:tuple)->np.ndarray:
     
     x_start = tuple_to_state(x_start)
     x_target = tuple_to_state(x_target)
-    
+    # Calculate the distance between the start and target states
     dist = distance_points(x_start, x_target)
-
+    # Calculate the new state via a linear path
     best_state = (x_target - x_start) / dist * max_dist + x_start
 
     return best_state
@@ -172,8 +184,9 @@ def collide_obstacles(x:tuple, obstacles:list)->bool:
         True if the state collides with the obstacles, False otherwise
     """
     collisions = []
-
+    # Check if the robot collides with the obstacle
     for obstacle in obstacles:
+        # For rectangles
         if len(x) > 2:
             point1 = x[1:]
             point2 = x[1:] + np.array([0., 2*d])
@@ -186,8 +199,10 @@ def collide_obstacles(x:tuple, obstacles:list)->bool:
             col4 = distance_points(point4, obstacle[:2]) <= obstacle[2]
 
             collisions.append(col1 or col2 or col3 or col4)
+        # For simple points
         else:
             collisions.append(distance_points(x, obstacle[:2]) <= obstacle[2])
+    # If any collision is detected return True, False otherwise
     if any(collisions):
         return True
     else:

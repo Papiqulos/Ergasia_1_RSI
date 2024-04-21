@@ -7,8 +7,6 @@ d = .25
 rectangle_width = 4*d
 rectangle_height = 2*d
 
-
-
 # Erwthma 1.2
 def visualize_states(states:list, obstacles:list=[])->None:
     """
@@ -21,10 +19,13 @@ def visualize_states(states:list, obstacles:list=[])->None:
     if states:
         fig = plt.figure()
         ax = fig.add_subplot(111)
+        # Visualize every second state
         for state in states[::2]:
-            rect = Rectangle((state[1,0], state[2,0]), rectangle_width, rectangle_height, edgecolor = 'black', fill=False, angle=state[0, 0] * 180. / np.pi, facecolor='blue')
+            # Draw the robot
+            rect = Rectangle((state[1,0], state[2,0]), rectangle_width, rectangle_height, edgecolor = "black", fill=False, angle=state[0, 0] * 180. / np.pi)
             ax.add_patch(rect)
-        
+
+        # Draw the obstacles if any
         if obstacles:
             for o in obstacles:
                 ax.add_patch(Circle([o[0], o[1]], radius=o[2], fill=False, zorder=3))
@@ -37,7 +38,7 @@ def visualize_states(states:list, obstacles:list=[])->None:
 
 def visualize_tree(tree:dict, obstacles:list=[])->None:
     """
-    Visualize the tree of states with obstacles
+    Visualize the tree of states with obstacles if any
     
     Args:
         tree: tree of states
@@ -49,11 +50,13 @@ def visualize_tree(tree:dict, obstacles:list=[])->None:
     ax = fig.add_subplot(111)
 
     for s in tree:
+        # Draw the parents
         ax.plot(s[0], s[1], '.', zorder=2)
 
+        # Draw the children
         for c in tree[s]:
             ax.plot([s[0], c[0, 0]], [s[1], c[1, 0]], zorder=1)
-
+    # Draw the obstacles if any
     if obstacles:
         for o in obstacles:
             ax.add_patch(Circle([o[0], o[1]], radius=o[2], fill=False, zorder=3))
@@ -64,7 +67,7 @@ def visualize_tree(tree:dict, obstacles:list=[])->None:
 
 def visualize_best_path(path:list, obstacles:list=[])->None:
     """
-    Visualize the best path from the start to the target state
+    Visualize the best path from the start to the target state(only x, y)
 
     Args:
         path: best path
@@ -72,12 +75,15 @@ def visualize_best_path(path:list, obstacles:list=[])->None:
     """
     fig = plt.figure()
     ax = fig.add_subplot(111)
-
+    # Draw the path
     for i in range(len(path) - 1):
+        # Nodes
         ax.plot(path[i][0], path[i][1], '.', zorder=2)
         ax.plot(path[i+1][0], path[i+1][1], '.', zorder=2)
+        # Edges
         ax.plot([path[i][0], path[i + 1][0]], [path[i][1], path[i + 1][1]], zorder=1)
         
+        # Draw the obstacles if any
         if obstacles:
             for o in obstacles:
                 ax.add_patch(Circle([o[0], o[1]], radius=o[2], fill=False, zorder=3))
@@ -85,8 +91,6 @@ def visualize_best_path(path:list, obstacles:list=[])->None:
     plt.ylim(-5., 5.)
     plt.xlim(-5., 5.)
     plt.show()
-
-
 
 
 if "__main__" == __name__:
