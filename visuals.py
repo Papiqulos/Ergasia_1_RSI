@@ -14,6 +14,7 @@ def visualize_states(states:list, obstacles:list=[])->None:
 
     Args:
         states: list of states of the robot
+        obstacles: list of obstacles
     Returns: None
     """
     if states:
@@ -22,16 +23,22 @@ def visualize_states(states:list, obstacles:list=[])->None:
         # Visualize every second state
         for state in states[::2]:
             # Draw the robot
-            rect = Rectangle((state[1,0], state[2,0]), rectangle_width, rectangle_height, edgecolor = "black", fill=False, angle=state[0, 0] * 180. / np.pi)
+            rect = Rectangle((state[1,0], state[2,0])
+                             , rectangle_width
+                             , rectangle_height
+                             , edgecolor = "black"
+                             , fill=False
+                             , angle=state[0, 0] * 180. / np.pi)
             ax.add_patch(rect)
 
         # Draw the obstacles if any
         if obstacles:
             for o in obstacles:
-                ax.add_patch(Circle([o[0], o[1]], radius=o[2], fill=False, zorder=3))
+                ax.add_patch(Circle([o[0], o[1]]
+                                    , radius=o[2], fill=False, zorder=3))
 
-        plt.xlim(-10, 10)
-        plt.ylim(-10, 10)
+        plt.xlim(-5, 5)
+        plt.ylim(-5, 5)
         plt.show()
     else:
         return
@@ -82,7 +89,7 @@ def visualize_best_path(path:list, obstacles:list=[])->None:
         ax.plot(path[i+1][0], path[i+1][1], '.', zorder=2)
         # Edges
         ax.plot([path[i][0], path[i + 1][0]], [path[i][1], path[i + 1][1]], zorder=1)
-        
+
         # Draw the obstacles if any
         if obstacles:
             for o in obstacles:

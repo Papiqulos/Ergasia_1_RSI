@@ -15,7 +15,7 @@ def task1():
     # Time step
     dt = 0.5
     # Total time
-    T = 20.
+    T = 100.
     # Integration method
     method = "rk"
 
@@ -52,7 +52,7 @@ def task2():
 
     # # Getting the best path from the tree and visualizing it
     # path = best_path(tree, init_tuple, end)
-    # # visualize_tree_without_obstacles(tree) # Uncomment to see the tree
+    # # visualize_tree(tree) # Uncomment to see the tree
     # visualize_best_path(path)
 
     ## Obstacles
@@ -69,7 +69,7 @@ def task2():
 
     # Getting the best path from the tree and visualizing it
     path = best_path(tree1, init_tuple, end)
-    # visualize_tree_with_obstacles(tree) # Uncomment to see the tree
+    # visualize_tree(tree1, obstacles) # Uncomment to see the tree
     visualize_best_path(path, obstacles)
 
 def task3():
@@ -123,7 +123,7 @@ def task3():
 
 
     # Obstacles
-    obstacles = [(0., 0., 1.), (0., -3., 1.)]  # (x,y,radius)
+    obstacles = [(-3., -2., 1.), (0., -3., 1.), (0., 2., 1.)]  # (x,y,radius)
     # Check if the initial and target states are valid
     if cond1 and cond2:
         opt  = True
@@ -155,7 +155,7 @@ def task3():
     
 
 if __name__ == "__main__":
-    
+
     """Uncomment the task you want to run"""
     # Model the robot and visualize for a given control input
     # task1()

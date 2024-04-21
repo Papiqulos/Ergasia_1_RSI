@@ -36,6 +36,7 @@ def simulate(x0:np.ndarray, u:np.ndarray, dt:float, T:float, method:str = "rk")-
         u: control input
         dt: time step
         T: total time
+        method: integration method
     Returns:
         list of states of the robot
     """

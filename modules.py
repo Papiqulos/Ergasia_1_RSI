@@ -189,9 +189,9 @@ def collide_obstacles(x:tuple, obstacles:list)->bool:
         # For rectangles
         if len(x) > 2:
             point1 = x[1:]
-            point2 = x[1:] + np.array([0., 2*d])
-            point3 = x[1:] + np.array([4*d, 2*d])
-            point4 = x[1:] + np.array([4*d, 0])
+            point2 = x[1:] + np.array([0., rectangle_height])
+            point3 = x[1:] + np.array([rectangle_width, rectangle_height])
+            point4 = x[1:] + np.array([rectangle_width, 0])
 
             col1 = distance_points(point1, obstacle[:2]) <= obstacle[2]
             col2 = distance_points(point2, obstacle[:2]) <= obstacle[2]
