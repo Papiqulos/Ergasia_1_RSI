@@ -38,7 +38,7 @@ def task2():
     opt = False
 
     ## No Obstacles
-    # Uncomment for the case without obstacles
+    """Uncomment for the case without obstacles"""
 
     # valid, tree, _ = RRT(x_init, x_target, opt, 0.1, 1000)
     # print(f"Path found: {valid}\nNumber of nodes: {len(tree)}")
@@ -90,7 +90,7 @@ def task3():
 
 
     ## No Obstacles
-    # Uncomment for the case without obstacles
+    """Uncomment for the case without obstacles""" 
 
     # Check if the initial and target states are valid
     # if cond1 and cond2:
@@ -153,21 +153,18 @@ def task3():
     else:
         print("Invalid")
     
-    
-    
-
-
 
 if __name__ == "__main__":
-
+    
+    """Uncomment the task you want to run"""
     # Model the robot and visualize for a given control input
     # task1()
 
     # RRT algorithm for a given initial and target state with and without obstacles
-    task2()
+    # task2()
 
     # RRT algorithm for a given initial and target state with and without obstacles for the differential drive robot
-    # task3()
+    task3()
 
 
 
