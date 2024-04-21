@@ -1,57 +1,11 @@
 import numpy as np
-from modules import *
-from rrt import nearest, sample_state
-from modeling import simulate
+from modules import distance_points, state_to_tuple
+from rrt import nearest, sample_state, connect, valid_state
 
 r = .1
 d = .25
 rectangle_width = 4*d
 rectangle_height = 2*d
-
-
-def connect1(x_start:tuple, x_target:tuple, opt:bool, obstacles:list)->np.ndarray:
-    """
-    Connect the start state to the target state via a linear path or an optimized path
-    while avoiding obstacles
-
-    Args:
-        x_start: start state
-        x_target: target state
-    Returns:
-        best_state: new state
-        states: trajectory from start to target
-    """
-
-    best_state = None
-    states = None
-    if opt:
-        # Optimization routine (slow)
-        best_state, states = optimal_control(x_start, x_target, 100)
-    else:
-        # Linear path
-        best_state = linear_path(x_start, x_target)
-
-    best_state_tuple = state_to_tuple(best_state)
-    if collide_obstacles(best_state_tuple, obstacles):
-        return True, states
-    else:
-        return best_state, states
-
-def valid_state1(x:np.ndarray, obstacles:list)->bool:
-    """
-    Check if the state is valid with the addition of obstacles
-
-    Args:
-        x: state
-    Returns:
-        True if the state is valid, False otherwise
-    """
-    if isinstance(x, bool):
-        if x:
-            return False
-    if (np.abs(x[1:]) > 5.).any() or collide_obstacles(x, obstacles):
-        return False
-    return True
 
 # RRT algorithm with obstacles
 def RRT_obstacles(x_start:np.ndarray, x_goal:np.ndarray, opt:bool, obstacles:list, max_dist:float, max_iters:int = 1000)->tuple:
@@ -61,7 +15,9 @@ def RRT_obstacles(x_start:np.ndarray, x_goal:np.ndarray, opt:bool, obstacles:lis
     Args:
         x_start: start state
         x_goal: goal state
+        opt: optimization flag
         obstacles: list of obstacles
+        max_dist: maximum distance between end state and goal state
         max_iters: maximum number of iterations
     Returns:
         True if a path from the start to the goal was found, False otherwise
@@ -73,9 +29,9 @@ def RRT_obstacles(x_start:np.ndarray, x_goal:np.ndarray, opt:bool, obstacles:lis
     for _ in range(max_iters):
         sample = sample_state(x_start)
         nearest_state = nearest(sample ,tree)
-        x_new, trajectory = connect1(nearest_state, sample, opt, obstacles)
+        x_new, trajectory = connect(nearest_state, sample, opt, obstacles)
         trajectories.append(trajectory)
-        if valid_state1(x_new, obstacles):
+        if valid_state(x_new, obstacles):
             # makin x_new a child of nearest_state
             tree[nearest_state].append(x_new) 
             # add a node to the tree

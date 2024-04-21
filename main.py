@@ -36,37 +36,37 @@ def erwthma2():
     opt = False
 
     ## No Obstacles
-    valid, tree, _ = RRT(x_init, x_target, opt, 0.1, 1000)
-    print(f"Path found: {valid}\nNumber of nodes: {len(tree)}")
-
-    # Getting the final state and printing its distance from the target state
-    states_tuples = list(tree.keys())
-    end = states_tuples[-1]
-    print(f"End state: {end}")
-    print(f"distance from target: {distance_points(end, state_to_tuple(x_target))}\n")
-    # nice_print_tree(tree)
-
-    # Getting the best path from the tree and visualizing it
-    path = best_path(tree, init_tuple, end)
-    # visualize_tree_without_obstacles(tree)
-    visualize_best_path(path)
-
-    ## Obstacles
-    # obstacles = [(0., 0., 1.), (0., -3., 1.), (2., -1., 1.)]  # (x,y,radius)
-    # valid1, tree1, _ = RRT_obstacles(x_init, x_target, opt, obstacles, 0.1, 1000)
-    # print(f"Path found: {valid1}\nNumber of nodes: {len(tree1)}")
+    # valid, tree, _ = RRT(x_init, x_target, opt, 0.1, 1000)
+    # print(f"Path found: {valid}\nNumber of nodes: {len(tree)}")
 
     # # Getting the final state and printing its distance from the target state
-    # states_tuples = list(tree1.keys())
+    # states_tuples = list(tree.keys())
     # end = states_tuples[-1]
     # print(f"End state: {end}")
-    # print(f"distance from target: {distance_points(end, state_to_tuple(x_target))}")
+    # print(f"distance from target: {distance_points(end, state_to_tuple(x_target))}\n")
     # # nice_print_tree(tree)
 
     # # Getting the best path from the tree and visualizing it
-    # path = best_path(tree1, state_to_tuple(x_init), end)
-    # # visualize_tree_with_obstacles(tree)
-    # visualize_best_path(path, obstacles)
+    # path = best_path(tree, init_tuple, end)
+    # # visualize_tree_without_obstacles(tree)
+    # visualize_best_path(path)
+
+    ## Obstacles
+    obstacles = [(0., 0., 1.), (0., -3., 1.), (2., -1., 1.)]  # (x,y,radius)
+    valid1, tree1, _ = RRT_obstacles(x_init, x_target, opt, obstacles, 0.1, 1000)
+    print(f"Path found: {valid1}\nNumber of nodes: {len(tree1)}")
+
+    # Getting the final state and printing its distance from the target state
+    states_tuples = list(tree1.keys())
+    end = states_tuples[-1]
+    print(f"End state: {end}")
+    print(f"distance from target: {distance_points(end, state_to_tuple(x_target))}")
+    # nice_print_tree(tree)
+
+    # Getting the best path from the tree and visualizing it
+    path = best_path(tree1, state_to_tuple(x_init), end)
+    # visualize_tree_with_obstacles(tree)
+    visualize_best_path(path, obstacles)
 
 def erwthma3():
 

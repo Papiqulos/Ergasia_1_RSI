@@ -1,6 +1,6 @@
 import numpy as np
-from modules import *
-from modeling import simulate
+from modules import distance_points, state_to_tuple, optimal_control, linear_path
+from rrt_with_obstacles import collide_obstacles
 
 def sample_state(state_template:np.ndarray)->tuple:
     """
@@ -14,20 +14,61 @@ def sample_state(state_template:np.ndarray)->tuple:
     """
     state = np.array([[np.random.uniform(-5., 5.) for _ in range(len(state_template[:,0]))]]).T
     return state_to_tuple(state)
- 
-def valid_state(x:np.ndarray)->bool:
+
+def connect(x_start:tuple, x_target:tuple, opt:bool, obstacles:list=[])->np.ndarray:
     """
-    Check if the state is valid
+    Connect the start state to the target state via a linear path or an optimized path
+    while avoiding obstacles
+
+    Args:
+        x_start: start state
+        x_target: target state
+        opt: optimization flag
+        obstacles: list of obstacles
+    Returns:
+        best_state: new state
+        states: trajectory from start to target
+    """
+
+    best_state = None
+    states = None
+    if opt:
+        # Optimization routine (slow)
+        best_state, states = optimal_control(x_start, x_target, 100)
+    else:
+        # Linear path
+        best_state = linear_path(x_start, x_target)
+
+    if obstacles:
+        best_state_tuple = state_to_tuple(best_state)
+        if collide_obstacles(best_state_tuple, obstacles):
+            return True, states
+        else:
+            return best_state, states
+    else:
+        return best_state, states
+
+def valid_state(x:np.ndarray, obstacles:list=[])->bool:
+    """
+    Check if the state is valid with the addition of obstacles
 
     Args:
         x: state
+        obstacles: list of obstacles
     Returns:
         True if the state is valid, False otherwise
     """
-    
-    if (np.abs(x[1:]) > 5.).any():
-        return False
-    return True 
+    if obstacles:
+        if isinstance(x, bool):
+            if x:
+                return False
+        if (np.abs(x[1:]) > 5.).any() or collide_obstacles(x, obstacles):
+            return False
+        return True
+    else:
+        if (np.abs(x[1:]) > 5.).any():
+            return False
+        return True
 
 def nearest(x_sample:tuple, tree:dict)->tuple:
     """
@@ -49,29 +90,6 @@ def nearest(x_sample:tuple, tree:dict)->tuple:
             nearest_state = state
     
     return nearest_state
-    
-def connect(x_start:tuple, x_target:tuple, opt:bool)->np.ndarray:
-    """
-    Connect the start state to the target state via a linear path or an optimized path
-
-
-    Args:
-        x_start: start state
-        x_target: target state
-    Returns:
-        best_state: new state
-        states: trajectory from start to target
-    """
-    best_state = None
-    states = None
-    if opt:
-        # Optimization routine (slow)
-        best_state, states = optimal_control(x_start, x_target, 100)
-    else:
-        # Linear path
-        best_state = linear_path(x_start, x_target)
-
-    return best_state, states
 
 # RRT algorithm
 def RRT(x_start:np.ndarray, x_goal:np.ndarray, opt:bool, max_dist:float, max_iters:int = 1000)->tuple:
@@ -81,6 +99,8 @@ def RRT(x_start:np.ndarray, x_goal:np.ndarray, opt:bool, max_dist:float, max_ite
     Args:
         x_start: start state
         x_goal: goal state
+        opt: optimization flag
+        max_dist: maximum distance between end state and goal state
         max_iters: maximum number of iterations
     Returns:
         True if a path from the start to the goal was found, False otherwise

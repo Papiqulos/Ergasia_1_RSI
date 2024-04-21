@@ -18,7 +18,7 @@ def distance_points(point1:tuple, point2:tuple)->float:
 
 def state_to_tuple(xx:np.ndarray)->tuple:
     """ 
-    Convert a state to a tuple 
+    Convert a state vector to a tuple 
 
     Args:
         xx: state
@@ -42,7 +42,6 @@ def tuple_to_state(t:tuple)->np.ndarray:
 
 def nice_print_tree(tree:dict)->None:
     """
-    
     Print the tree in a nice format
 
     Args:
@@ -100,16 +99,17 @@ def best_path(tree:dict, start:tuple, target:tuple)->list:
 
     return path
 
-def optimal_control(x_start:tuple, x_target:tuple, max_ites:int = 1000)->np.ndarray:
+def optimal_control(x_start:tuple, x_target:tuple, max_iters:int = 1000)->np.ndarray:
     """
     Connect the start state to the target state via an optimized path
 
     Args:
         x_start: start state
         x_target: target state
-        K: number of iterations
+        max_iters: number of iterations
     Returns:
-        new state
+        best_state: new state
+        states: trajectory from start to target
     """
     # Optimization routine (slow)
     x_start = tuple_to_state(x_start)
@@ -120,7 +120,7 @@ def optimal_control(x_start:tuple, x_target:tuple, max_ites:int = 1000)->np.ndar
         """Sample a control input"""
         return np.random.uniform(-0.5, 0.5, (2, 1))
     
-    for _ in range(max_ites):
+    for _ in range(max_iters):
         u = sample_control()
         states = simulate(x_start, u, 0.1, 4., "rk")
         dist = distance_points(state_to_tuple(states[-1])[1:], x_target[1:])
