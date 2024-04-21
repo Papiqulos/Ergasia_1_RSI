@@ -125,7 +125,8 @@ def optimal_control(x_start:tuple, x_target:tuple, max_iters:int = 100, obstacle
         best_state: new state
         states: trajectory from start to target
     """
-    # Optimization routine (slow)
+    # Optimization routine (slow) RRT ends up scaling to  O(n*m*k) 
+    # where n is the number of nodes, m is the number of iterations of optimal control and k is the number of number of time steps for each simulation
     x_start = tuple_to_state(x_start)
     x_target = tuple_to_state(x_target)
     min_dist = np.inf
@@ -156,6 +157,8 @@ def optimal_control(x_start:tuple, x_target:tuple, max_iters:int = 100, obstacle
             if dist < min_dist:
                 min_dist = dist
                 best_state = states[-1]
+        else:
+            continue
         
             
     

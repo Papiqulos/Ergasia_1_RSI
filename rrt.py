@@ -35,7 +35,7 @@ def connect(x_start:tuple, x_target:tuple, opt:bool, obstacles:list=[])->np.ndar
     # Check if optimization is needed
     if opt:
         # Optimization routine (slow)
-        best_state, states = optimal_control(x_start, x_target, 100, obstacles)
+        best_state, states = optimal_control(x_start, x_target, 1000, obstacles)
     else:
         # Linear path
         best_state = linear_path(x_start, x_target)

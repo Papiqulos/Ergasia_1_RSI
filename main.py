@@ -127,7 +127,7 @@ def task3():
     # Check if the initial and target states are valid
     if cond1 and cond2:
         opt  = True
-        valid, tree, trajectories = RRT_obstacles(x_init, x_target, opt, obstacles, 0.5, 100)
+        valid, tree, trajectories = RRT_obstacles(x_init, x_target, opt, obstacles, 0.5, 1000)
         tr = [item for sublist in trajectories for item in sublist] # Concatenating the trajectories
         print(f"Path found: {valid}\nNumber of nodes: {len(tree)}")
 
