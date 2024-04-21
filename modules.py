@@ -129,26 +129,35 @@ def optimal_control(x_start:tuple, x_target:tuple, max_iters:int = 100, obstacle
     x_start = tuple_to_state(x_start)
     x_target = tuple_to_state(x_target)
     min_dist = np.inf
+    best_state = None
+    states = None
 
     def sample_control()->np.ndarray:
         """Sample a control input"""
         return np.random.uniform(-0.5, 0.5, (2, 1))
     
     for _ in range(max_iters):
+        
         # Sample a control input
         u = sample_control()
         # Simulate the robot with the control input
         states = simulate(x_start, u, 0.1, 4., "rk")
         # Check if the robot collides with the obstacles
+        col = False
         for state in states:
             if collide_obstacles(state_to_tuple(state), obstacles):
+                col = True
                 break
-        # Calculate the distance between the last state and the target state
-        dist = distance_points(state_to_tuple(states[-1])[1:], x_target[1:])
-        # Update the best state if the distance is smaller
-        if dist < min_dist:
-            min_dist = dist
-            best_state = states[-1]
+        # Skip the current iteration if the robot collides with the obstacles
+        if not col:
+            # Calculate the distance between the last state and the target state
+            dist = distance_points(state_to_tuple(states[-1])[1:], x_target[1:])
+            # Update the best state if the distance is smaller
+            if dist < min_dist:
+                min_dist = dist
+                best_state = states[-1]
+        
+            
     
     return best_state, states
 

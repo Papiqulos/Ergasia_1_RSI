@@ -116,7 +116,7 @@ def task3():
     #     # visualize_best_path(path_xy)                 # Uncomment to see the path(only x, y)
     #     best_states = [tuple_to_state(p) for p in path]
     #     visualize_states(best_states)
-    #     # visualize_states(tr)                         # Uncomment to see the trajectories
+    #     # visualize_states(tr)                         # Uncomment to see the trajectories(some collisions may occur)
         
     # else:
     #     print("Invalid")
@@ -147,8 +147,8 @@ def task3():
         # path_xy = [p[1:] for p in path]               # Uncomment to see the path(only x, y)
         # visualize_best_path(path_xy)                  # Uncomment to see the path(only x, y)
         best_states = [tuple_to_state(p) for p in path]
-        visualize_states(best_states, obstacles) 
-        # visualize_states(tr, obstacles)               # Uncomment to see the trajectories(some still collide with the obstacles)
+        visualize_states(best_states, obstacles)
+        # visualize_states(tr, obstacles)               # Uncomment to see the trajectories(some collisions may occur)
         
     else:
         print("Invalid")

@@ -66,7 +66,7 @@ def valid_state(x:np.ndarray, obstacles:list=[])->bool:
         if isinstance(x, bool):
             if x:
                 return False
-        if (np.abs(x[1:]) > 5.).any() or collide_obstacles(x, obstacles):
+        if (np.abs(x[1:]) > 5.).any() or collide_obstacles(state_to_tuple(x), obstacles):
             return False
         return True
     else:
