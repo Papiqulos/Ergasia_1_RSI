@@ -1,4 +1,5 @@
 import numpy as np
+from modeling import simulate
 
 def distance_points(point1:tuple, point2:tuple)->float:
     """
@@ -98,6 +99,57 @@ def best_path(tree:dict, start:tuple, target:tuple)->list:
     path.reverse()
 
     return path
+
+def optimal_control(x_start:tuple, x_target:tuple, max_ites:int = 1000)->np.ndarray:
+    """
+    Connect the start state to the target state via an optimized path
+
+    Args:
+        x_start: start state
+        x_target: target state
+        K: number of iterations
+    Returns:
+        new state
+    """
+    # Optimization routine (slow)
+    x_start = tuple_to_state(x_start)
+    x_target = tuple_to_state(x_target)
+    min_dist = np.inf
+
+    def sample_control()->np.ndarray:
+        """Sample a control input"""
+        return np.random.uniform(-0.5, 0.5, (2, 1))
+    
+    for _ in range(max_ites):
+        u = sample_control()
+        states = simulate(x_start, u, 0.1, 4., "rk")
+        dist = distance_points(state_to_tuple(states[-1])[1:], x_target[1:])
+        if dist < min_dist:
+            min_dist = dist
+            best_state = states[-1]
+    
+    return best_state, states
+
+def linear_path(x_start:tuple, x_target:tuple)->np.ndarray:
+    """
+    Connect the start state to the target state via a linear path
+
+    Args:
+        x_start: start state
+        x_target: target state
+    Returns:
+        new state
+    """
+    max_dist = 0.3
+    
+    x_start = tuple_to_state(x_start)
+    x_target = tuple_to_state(x_target)
+    
+    dist = distance_points(x_start, x_target)
+
+    best_state = (x_target - x_start) / dist * max_dist + x_start
+
+    return best_state
 
 
 

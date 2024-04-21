@@ -54,42 +54,24 @@ def connect(x_start:tuple, x_target:tuple, opt:bool)->np.ndarray:
     """
     Connect the start state to the target state via a linear path or an optimized path
 
+
     Args:
         x_start: start state
         x_target: target state
     Returns:
-        new state
+        best_state: new state
+        states: trajectory from start to target
     """
     best_state = None
+    states = None
     if opt:
         # Optimization routine (slow)
-        x_start = tuple_to_state(x_start)
-        x_target = tuple_to_state(x_target)
-        min_dist = np.inf
-
-        def sample_control():
-            return np.random.uniform(-0.5, 0.5, (2, 1))
-        
-        K = 100
-        for _ in range(K):
-            u = sample_control()
-            states = simulate(x_start, u, 0.1, 4., "rk")
-            dist = distance_points(state_to_tuple(states[-1]), x_target)
-            if dist < min_dist:
-                min_dist = dist
-                best_state = states[-1]
+        best_state, states = optimal_control(x_start, x_target, 100)
     else:
-        ## Linear path
-        max_dist = 0.3
-        
-        x_start = tuple_to_state(x_start)
-        x_target = tuple_to_state(x_target)
-        
-        dist = distance_points(x_start, x_target)
+        # Linear path
+        best_state = linear_path(x_start, x_target)
 
-        best_state = (x_target - x_start) / dist * max_dist + x_start
-
-    return best_state
+    return best_state, states
 
 # RRT algorithm
 def RRT(x_start:np.ndarray, x_goal:np.ndarray, opt:bool, max_dist:float, max_iters:int = 1000)->tuple:
@@ -107,10 +89,12 @@ def RRT(x_start:np.ndarray, x_goal:np.ndarray, opt:bool, max_dist:float, max_ite
 
     tree = {}
     tree[state_to_tuple(x_start)] = []
+    trajectories = []
     for _ in range(max_iters):
         sample = sample_state(x_start)
         nearest_state = nearest(sample ,tree)
-        x_new = connect(nearest_state, sample, opt)
+        x_new, trajectory = connect(nearest_state, sample, opt)
+        trajectories.append(trajectory)
         if valid_state(x_new):
             # makin x_new a child of nearest_state
             tree[nearest_state].append(x_new) 
@@ -123,9 +107,9 @@ def RRT(x_start:np.ndarray, x_goal:np.ndarray, opt:bool, max_dist:float, max_ite
                 dist = distance_points(x_new, x_goal)
 
             if dist <= max_dist:
-                    return True, tree
+                    return True, tree, trajectories
     
-    return False, tree
+    return False, tree, trajectories
 
 
 
